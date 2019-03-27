@@ -43,7 +43,7 @@ def query_db(query, one=False):
     cur.execute(query)
     r = [dict((cur.description[i][0], value) \
               for i, value in enumerate(row)) for row in cur.fetchall()]
-    cur.connection.close()
+    close(conn)
     return (r[0] if r else None) if one else r
 
 
