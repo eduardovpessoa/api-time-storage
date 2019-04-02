@@ -1,6 +1,7 @@
 # !/usr/bin/python
-import psycopg2
+import base64
 import json
+import psycopg2
 from configparser import ConfigParser
 from flask import Flask, request
 from flask_httpauth import HTTPBasicAuth
@@ -46,8 +47,11 @@ def login():
     senha = data['senha']
     if email is None or senha is None:
         return 'Dados de e-mail ou senha não podem ser vazios!', 400
-    query = "SELECT fn_login('" + email + "', '" + senha + "')"
+    query = "SELECT fn_login('" + base64.b64decode(email).decode('utf-8') + "', '" + base64.b64decode(senha).decode(
+        'utf-8') + "')"
     result = query_db(query, False)
+    if not result:
+        return 'Usuário os senha inválidos!', 404
     return json.dumps(result)
 
 
