@@ -2,7 +2,7 @@
 import psycopg2
 import json
 from configparser import ConfigParser
-from flask import Flask
+from flask import Flask, request
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import Api
 
@@ -39,7 +39,14 @@ def pessoa():
 
 @app.route('/login', methods=['POST'])
 def login():
-    query = "SELECT fn_login()"
+    if not request.json:
+        return 'Não há dados em JSON no corpo da request!', 400
+    data = request.get_json()
+    email = data['email']
+    senha = data['senha']
+    if email is None or senha is None:
+        return 'Dados de e-mail ou senha não podem ser vazios!', 400
+    query = "SELECT fn_login('" + email + "', '" + senha + "')"
     result = query_db(query, False)
     return json.dumps(result)
 
