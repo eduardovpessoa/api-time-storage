@@ -29,10 +29,17 @@ def index():
     return '<h3>API TimeStorage Running!</h3><h4>PostgreSQL DB Version: ' + str(db_version) + '</h4>'
 
 
-@app.route('/pessoa')
+@app.route('/pessoa', methods=['GET'])
 @auth.login_required
 def pessoa():
     query = "SELECT * FROM v_pessoa"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    query = "SELECT fn_login()"
     result = query_db(query, False)
     return json.dumps(result)
 
