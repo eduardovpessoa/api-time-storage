@@ -1,5 +1,4 @@
 # !/usr/bin/python
-import base64
 import json
 import psycopg2
 from configparser import ConfigParser
@@ -38,21 +37,97 @@ def pessoa():
     return json.dumps(result)
 
 
+@app.route('/cadastrar', methods=['POST'])
+def cadastrar():
+    if not request.json:
+        return 'Os dados do JSON não podem estar vazios!', 400
+    data = request.get_json()
+    cadastrar_usuario(data['nome_pessoa'], data['sobrenome_pessoa'], data['telefone_pessoa'],
+                      data['data_nascimento_pessoa'],
+                      data['email_pessoa'], data['senha_usuario'])
+
+
 @app.route('/login', methods=['POST'])
 def login():
     if not request.json:
-        return 'Não há dados em JSON no corpo da request!', 400
+        return 'Os dados do JSON não podem estar vazios!', 400
     data = request.get_json()
     email = data['email']
     senha = data['senha']
     if email is None or senha is None:
         return 'Dados de e-mail ou senha não podem ser vazios!', 400
-    query = "SELECT fn_login('" + base64.b64decode(email).decode('utf-8') + "', '" + base64.b64decode(senha).decode(
-        'utf-8') + "')"
-    result = query_db(query, False)
-    if not result:
-        return 'Usuário os senha inválidos!', 404
-    return json.dumps(result)
+    query = "SELECT * FROM v_login WHERE email_pessoa = '" + email + "' AND senha_usuario = '" + senha + "'"
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute(query)
+    if cur.rowcount <= 0:
+        return 'Usuário ou senha inválidos!', 404
+    records = cur.fetchall()
+    user = User()
+    for row in records:
+        user.cod = row[0]
+        user.nome = row[1]
+        user.email = row[2]
+        user.tipo = row[3]
+    close(conn)
+    return json.dumps(user.__dict__)
+
+
+@app.route('/documentos/<cod>', methods=['GET'])
+@auth.login_required
+def documentos_detail(cod):
+    if not request.json:
+        return 'A requisição deve ser realizada no formato JSON!', 400
+    if not cod:
+        return 'O código do documento não pode ser vazio!', 400
+    else:
+        query = "SELECT * FROM v_docs_info"
+        conn = connect()
+        cur = conn.cursor()
+        cur.execute(query)
+        if cur.rowcount <= 0:
+            return json.dumps([]), 200
+        records = cur.fetchall()
+        docs = []
+        for row in records:
+            docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]))
+        close(conn)
+        return json.dumps(docs)
+
+
+@app.route('/documentos', methods=['GET'])
+@auth.login_required
+def documentos():
+    query = "SELECT * FROM v_docs"
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute(query)
+    if cur.rowcount <= 0:
+        return json.dumps([]), 200
+    records = cur.fetchall()
+    docs = []
+    for row in records:
+        docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]).__dict__)
+    close(conn)
+    return json.dumps(docs)
+
+
+class Document:
+    def __init__(self, cod=-1, titulo='', sinopse='', publicacao='', categoria='', editora=''):
+        self.cod = cod
+        self.titulo = titulo
+        self.sinopse = sinopse
+        self.publicacao = publicacao
+        self.categoria = categoria
+        self.editora = editora
+
+
+class User:
+    def __init__(self, cod=-1, nome='', email='', tipo=-1):
+        self.cod = cod
+        self.nome = nome
+        self.email = email
+        self.tipo = tipo
 
 
 def query_db(query, one=False):
@@ -63,6 +138,24 @@ def query_db(query, one=False):
               for i, value in enumerate(row)) for row in cur.fetchall()]
     close(conn)
     return (r[0] if r else None) if one else r
+
+
+def cadastrar_usuario(nome, sobrenome, telefone, nascimento, email, senha):
+    conn = connect()
+    cur = conn.cursor()
+    query = "INSERT INTO pessoa(nome_pessoa, sobrenome_pessoa, email_pessoa, telefone_pessoa, \
+    data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa) \
+    VALUES (nome, sobrenome, email, telefone, nascimento, now(), 0) RETURNING id_pessoa;"
+    cur.execute(query)
+    cod_pessoa = cur.fetchone()[0]
+    if (cod_pessoa > 0):
+        query = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario)" \
+                "VALUES (0, senha_usuario, cod_pessoa, '');"
+        cur.execute(query)
+        close(conn)
+        return 'Usuário cadastrado com sucesso!', 200
+    close(conn)
+    return 'Problemas ao inserir o usuário!', 400
 
 
 def config(filename='util/database.ini', section='postgresql'):
