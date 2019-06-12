@@ -52,11 +52,15 @@ def cadastrar():
     if resp:
         conn.commit()
         close(conn)
-        return 'Usuário cadastrado com sucesso!', 200
+        resp = json.dumps({'message': 'Usuário cadastrado com sucesso!'})
+        resp.status_code = 201
+        return resp
     else:
         conn.rollback()
         close(conn)
-        return 'Problemas ao cadastrar usuário!', 500
+        resp = json.dumps({'message': 'Problemas ao cadastrar usuário!'})
+        resp.status_code = 400
+        return resp
 
 
 @app.route('/login', methods=['POST'])
