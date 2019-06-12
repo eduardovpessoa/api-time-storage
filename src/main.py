@@ -42,9 +42,22 @@ def cadastrar():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
     data = request.get_json()
-    cadastrar_usuario(data['nome_pessoa'], data['sobrenome_pessoa'], data['telefone_pessoa'],
-                      data['data_nascimento_pessoa'],
-                      data['email_pessoa'], data['senha_usuario'])
+    conn = connect()
+    cur = conn.cursor()
+    query = "INSERT INTO pessoa(nome_pessoa, sobrenome_pessoa, email_pessoa, telefone_pessoa, \
+        data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa) \
+        VALUES ('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + data['email_pessoa'] + "', \
+        '" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "', now(), 0) RETURNING id_pessoa;"
+    cur.execute(query)
+    cod_pessoa = cur.fetchone()[0]
+    if (cod_pessoa > 0):
+        query = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario)" \
+                "VALUES (0, senha_usuario, cod_pessoa, '');"
+        cur.execute(query)
+        close(conn)
+        return 'Usuário cadastrado com sucesso!', 200
+    close(conn)
+    return 'Problemas ao inserir o usuário!', 400
 
 
 @app.route('/login', methods=['POST'])
@@ -138,24 +151,6 @@ def query_db(query, one=False):
               for i, value in enumerate(row)) for row in cur.fetchall()]
     close(conn)
     return (r[0] if r else None) if one else r
-
-
-def cadastrar_usuario(nome, sobrenome, telefone, nascimento, email, senha):
-    conn = connect()
-    cur = conn.cursor()
-    query = "INSERT INTO pessoa(nome_pessoa, sobrenome_pessoa, email_pessoa, telefone_pessoa, \
-    data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa) \
-    VALUES (nome, sobrenome, email, telefone, nascimento, now(), 0) RETURNING id_pessoa;"
-    cur.execute(query)
-    cod_pessoa = cur.fetchone()[0]
-    if (cod_pessoa > 0):
-        query = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario)" \
-                "VALUES (0, senha_usuario, cod_pessoa, '');"
-        cur.execute(query)
-        close(conn)
-        return 'Usuário cadastrado com sucesso!', 200
-    close(conn)
-    return 'Problemas ao inserir o usuário!', 400
 
 
 def config(filename='util/database.ini', section='postgresql'):
