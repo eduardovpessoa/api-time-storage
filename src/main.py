@@ -58,15 +58,13 @@ def cadastrar():
     cur.execute(query)
     codpessoa = cur.fetchone()[0]
     print('CodPessoa: ' + str(codpessoa))
-    if codpessoa > 0:
-        queryuser = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
-                VALUES (0, '" + data['senha_usuario'] + "', " + codpessoa + ", 'teste.png');"
-        print(queryuser)
-        cur.execute(queryuser)
-        close(conn)
-        return 'Usuário cadastrado com sucesso!', 200
+    # if codpessoa > 0:
+    queryuser = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
+            VALUES (0, '" + data['senha_usuario'] + "', " + cur.fetchone()[0] + ", 'teste.png');"
+    print(queryuser)
+    cur.execute(queryuser)
     close(conn)
-    return 'Problemas ao inserir o usuário!', 400
+    return 'Usuário cadastrado com sucesso!', 200
 
 
 @app.route('/login', methods=['POST'])
