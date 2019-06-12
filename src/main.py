@@ -52,7 +52,7 @@ def cadastrar():
     codpessoa = cur.fetchone()[0]
     if codpessoa > 0:
         query = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
-                VALUES (0, '" + data['senha_usuario'] + "', " + codpessoa + ", '');"
+                VALUES (0, '" + str(data['senha_usuario']) + "', " + str(codpessoa) + ", 'teste.png');"
         cur.execute(query)
         close(conn)
         return 'Usuário cadastrado com sucesso!', 200
