@@ -54,13 +54,15 @@ def cadastrar():
         data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa) \
         VALUES ('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + data['email_pessoa'] + "', \
         '" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "', now(), 0) RETURNING id_pessoa;"
+    print(query)
     cur.execute(query)
     codpessoa = cur.fetchone()[0]
-    print('CodPessoa: ' + codpessoa)
+    print('CodPessoa: ' + str(codpessoa))
     if codpessoa > 0:
-        query = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
+        queryuser = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
                 VALUES (0, '" + data['senha_usuario'] + "', " + codpessoa + ", 'teste.png');"
-        cur.execute(query)
+        print(queryuser)
+        cur.execute(queryuser)
         close(conn)
         return 'Usuário cadastrado com sucesso!', 200
     close(conn)
