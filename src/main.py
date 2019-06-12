@@ -44,15 +44,22 @@ def cadastrar():
     data = request.get_json()
     conn = connect()
     cur = conn.cursor()
+    print(data['nome_pessoa'])
+    print(data['sobrenome_pessoa'])
+    print(data['email_pessoa'])
+    print(data['telefone_pessoa'])
+    print(data['data_nascimento_pessoa'])
+
     query = "INSERT INTO pessoa(nome_pessoa, sobrenome_pessoa, email_pessoa, telefone_pessoa, \
         data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa) \
         VALUES ('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + data['email_pessoa'] + "', \
         '" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "', now(), 0) RETURNING id_pessoa;"
     cur.execute(query)
     codpessoa = cur.fetchone()[0]
+    print('CodPessoa: ' + codpessoa)
     if codpessoa > 0:
         query = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
-                VALUES (0, '" + str(data['senha_usuario']) + "', " + str(codpessoa) + ", 'teste.png');"
+                VALUES (0, '" + data['senha_usuario'] + "', " + codpessoa + ", 'teste.png');"
         cur.execute(query)
         close(conn)
         return 'Usuário cadastrado com sucesso!', 200
