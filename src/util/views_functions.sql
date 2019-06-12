@@ -41,3 +41,18 @@ CREATE OR REPLACE VIEW v_login AS
 SELECT p.id_pessoa, p.nome_pessoa, p.email_pessoa, u.tipo_usuario, u.senha_usuario
 FROM pessoa p
          INNER JOIN usuario u ON p.id_pessoa = u.id_pessoa;
+
+CREATE OR REPLACE FUNCTION fn_register_user(nomePessoa TEXT, sobrenomePessoa TEXT, emailPessoa TEXT, telefonePessoa TEXT, dataNascimentoPessoa TEXT, senhaUsuario TEXT)
+RETURNS BOOLEAN AS $$
+DECLARE idPessoa integer;
+BEGIN
+  INSERT INTO pessoa (nome_pessoa, sobrenome_pessoa, email_pessoa, telefone_pessoa, data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa)
+  VALUES (nomePessoa, sobrenomePessoa, emailPessoa, telefonePessoa, TO_DATE(dataNascimentoPessoa, 'YYYY-MM-DD'), now(), 0) RETURNING id_pessoa INTO idPessoa;
+  INSERT INTO usuario (tipo_usuario, senha_usuario, id_pessoa)
+  VALUES (0, senhaUsuario, idPessoa);
+  RETURN TRUE;
+EXCEPTION WHEN OTHERS THEN
+  RETURN FALSE;
+END;
+
+$$ LANGUAGE plpgsql;
