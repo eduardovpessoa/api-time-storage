@@ -47,7 +47,7 @@ def cadastrar():
     cur = conn.cursor()
     query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
             data['email_pessoa'] + "','" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "','" + \
-            data['senha_pessoa'] + "');"
+            data['senha_pessoa'] + "')"
     cur.execute(query)
     resp = cur.fetchone()[0]
     if resp:
