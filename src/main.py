@@ -48,6 +48,7 @@ def cadastrar():
     query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
             data['email_pessoa'] + "','" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "','" + \
             data['senha_pessoa'] + "')"
+    print(query)
     cur.execute(query)
     resp = cur.fetchone()[0]
     if resp:
