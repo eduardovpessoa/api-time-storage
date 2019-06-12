@@ -51,8 +51,11 @@ def cadastrar():
     resp = cur.fetchone()[0]
     if resp:
         conn.commit()
+        close(conn)
         return 'Usuário cadastrado com sucesso!', 200
     else:
+        conn.rollback()
+        close(conn)
         return 'Problemas ao cadastrar usuário!', 500
 
 
