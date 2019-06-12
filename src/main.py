@@ -44,20 +44,16 @@ def cadastrar():
     data = request.get_json()
     conn = connect()
     cur = conn.cursor()
-    print(data['nome_pessoa'])
-    print(data['sobrenome_pessoa'])
-    print(data['email_pessoa'])
-    print(data['telefone_pessoa'])
-    print(data['data_nascimento_pessoa'])
-
     query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
             data['email_pessoa'] + "','" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "','" + \
-            data['data_nascimento_pessoa'] + "')"
+            data['senha_pessoa'] + "');"
     cur.execute(query)
     resp = cur.fetchone()[0]
-    print(resp)
-    close(conn)
-    return 'Usuário cadastrado com sucesso!', 200
+    if resp:
+        conn.commit()
+        return 'Usuário cadastrado com sucesso!', 200
+    else:
+        return 'Problemas ao cadastrar usuário!', 500
 
 
 @app.route('/login', methods=['POST'])
