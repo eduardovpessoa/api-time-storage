@@ -42,6 +42,7 @@ def cadastrar():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
     data = request.get_json()
+    print(data)
     conn = connect()
     cur = conn.cursor()
     query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
