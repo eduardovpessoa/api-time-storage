@@ -50,19 +50,12 @@ def cadastrar():
     print(data['telefone_pessoa'])
     print(data['data_nascimento_pessoa'])
 
-    query = "INSERT INTO pessoa(nome_pessoa, sobrenome_pessoa, email_pessoa, telefone_pessoa, \
-        data_nascimento_pessoa, data_cadastro_pessoa, status_pessoa) \
-        VALUES ('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + data['email_pessoa'] + "', \
-        '" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "', now(), 0) RETURNING id_pessoa;"
-    print(query)
+    query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
+            data['email_pessoa'] + "','" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "','" + \
+            data['data_nascimento_pessoa'] + "')"
     cur.execute(query)
-    codpessoa = cur.fetchone()[0]
-    print('CodPessoa: ' + str(codpessoa))
-    # if codpessoa > 0:
-    queryuser = "INSERT INTO usuario(tipo_usuario, senha_usuario, id_pessoa, foto_perfil_usuario) \
-            VALUES (0, '" + data['senha_usuario'] + "', " + cur.fetchone()[0] + ", 'teste.png');"
-    print(queryuser)
-    cur.execute(queryuser)
+    resp = cur.fetchone()[0]
+    print(resp)
     close(conn)
     return 'Usuário cadastrado com sucesso!', 200
 
