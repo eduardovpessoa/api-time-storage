@@ -42,9 +42,8 @@ def cadastrar():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
     data = request.get_json()
-    cadastrar_usuario(data['nome_pessoa'], data['sobrenome_pessoa'], data['telefone_pessoa'],
-                      data['data_nascimento_pessoa'],
-                      data['email_pessoa'], data['senha_usuario'])
+    cadastrar_usuario(data['nome'], data['sobrenome'], data['telefone'],
+                      data['nascimento'], data['email'], data['senha'])
 
 
 @app.route('/login', methods=['POST'])
