@@ -2,7 +2,7 @@
 import json
 import psycopg2
 from configparser import ConfigParser
-from flask import Flask, request
+from flask import Flask, request, Response
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import Api
 
@@ -52,15 +52,11 @@ def cadastrar():
     if resp:
         conn.commit()
         close(conn)
-        resp = json.dumps({'message': 'Usuário cadastrado com sucesso!'})
-        resp.status_code = 201
-        return resp
+        return Response("{'message': 'Usuário cadastrado com sucesso!'}", status=201, mimetype='application/json')
     else:
         conn.rollback()
         close(conn)
-        resp = json.dumps({'message': 'Problemas ao cadastrar usuário!'})
-        resp.status_code = 400
-        return resp
+        return Response("{'message': 'Problemas ao cadastrar usuário!'}", status=500, mimetype='application/json')
 
 
 @app.route('/login', methods=['POST'])
