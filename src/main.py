@@ -67,7 +67,7 @@ def categoria():
 
 @app.route('/documentos', methods=['GET'])
 def documentos():
-    query = "SELECT * FROM documento ORDER BY status_documento ASC, titulo_documento ASC"
+    query = "SELECT * FROM v_docs"
     result = query_db(query, False)
     return json.dumps(result, indent=4, sort_keys=True, default=str)
 
