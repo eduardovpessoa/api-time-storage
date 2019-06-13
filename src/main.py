@@ -51,8 +51,8 @@ def categoria():
     return json.dumps(result)
 
 
-@app.route('/categoria', methods=['POST'])
-def categoria():
+@app.route('/envcategoria', methods=['POST'])
+def envcategoria():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
     data = request.get_json()
