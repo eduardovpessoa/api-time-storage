@@ -37,6 +37,13 @@ def pessoa():
     return json.dumps(result)
 
 
+@app.route('/categoria', methods=['GET'])
+def pessoa():
+    query = "SELECT * FROM categoria ORDER BY descricao_categoria ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
     if not request.json:
@@ -122,6 +129,13 @@ def documentos():
         docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]).__dict__)
     close(conn)
     return json.dumps(docs)
+
+
+class Categoria:
+    def __init__(self, id=-1, descricao='', status=-1):
+        self.id = id
+        self.descricao = descricao
+        self.status = status
 
 
 class Document:
