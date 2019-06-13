@@ -37,9 +37,37 @@ def pessoa():
     return json.dumps(result)
 
 
+@app.route('/autor', methods=['GET'])
+def autor():
+    query = "SELECT * FROM autor ORDER BY status_autor ASC, nome_autor ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
 @app.route('/categoria', methods=['GET'])
 def categoria():
-    query = "SELECT * FROM categoria ORDER BY descricao_categoria ASC"
+    query = "SELECT * FROM categoria ORDER BY status_categoria ASC, descricao_categoria ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
+@app.route('/docs', methods=['GET'])
+def docs():
+    query = "SELECT * FROM documento ORDER BY status_documento ASC, titulo_documento ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
+@app.route('/editora', methods=['GET'])
+def editora():
+    query = "SELECT * FROM editora ORDER BY status_editora ASC, descricao_editora ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
+@app.route('/genero', methods=['GET'])
+def genero():
+    query = "SELECT * FROM genero ORDER BY status_genero ASC, descricao_genero ASC"
     result = query_db(query, False)
     return json.dumps(result)
 
@@ -129,13 +157,6 @@ def documentos():
         docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]).__dict__)
     close(conn)
     return json.dumps(docs)
-
-
-class Categoria:
-    def __init__(self, id=-1, descricao='', status=-1):
-        self.id = id
-        self.descricao = descricao
-        self.status = status
 
 
 class Document:
