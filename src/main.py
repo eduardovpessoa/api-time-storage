@@ -72,25 +72,11 @@ def documentos():
     return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
-@app.route('/documentos/<cod>', methods=['GET'])
+@app.route('/documentos/<int:cod>', methods=['GET'])
 def documentos_detail(cod):
-    if not request.json:
-        return 'A requisição deve ser realizada no formato JSON!', 400
-    if not cod:
-        return 'O código do documento não pode ser vazio!', 400
-    else:
-        query = "SELECT * FROM v_docs_info"
-        conn = connect()
-        cur = conn.cursor()
-        cur.execute(query)
-        if cur.rowcount <= 0:
-            return json.dumps([]), 200
-        records = cur.fetchall()
-        docs = []
-        for row in records:
-            docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]))
-        close(conn)
-        return json.dumps(docs)
+    query = "SELECT * FROM v_docs_info WHERE id_documento = " + cod
+    result = query_db(query, False)
+    return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
 @app.route('/editora', methods=['GET'])
