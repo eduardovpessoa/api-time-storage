@@ -150,11 +150,18 @@ def envgenero():
     return Response("{'message': 'Gênero cadastrado com sucesso!'}", status=201, mimetype='application/json')
 
 
-@app.route('/genero', methods=['GET'])
-def genero():
-    query = "SELECT * FROM genero ORDER BY status_genero ASC, descricao_genero ASC"
+@app.route('/imagens/<int:cod>', methods=['GET'])
+def genero(cod):
+    query = "SELECT * FROM imagem WHERE id_documento = " + str(cod)
     result = query_db(query, False)
     return json.dumps(result)
+
+
+@app.route('/documentos/<int:cod>', methods=['GET'])
+def documentos_detail(cod):
+    query = "SELECT * FROM v_docs_info WHERE id_documento = " + str(cod)
+    result = query_db(query, False)
+    return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
 @app.route('/login', methods=['POST'])
