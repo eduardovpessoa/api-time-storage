@@ -38,7 +38,7 @@ def pessoa():
 
 
 @app.route('/categoria', methods=['GET'])
-def pessoa():
+def categoria():
     query = "SELECT * FROM categoria ORDER BY descricao_categoria ASC"
     result = query_db(query, False)
     return json.dumps(result)
