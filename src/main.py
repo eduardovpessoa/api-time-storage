@@ -51,6 +51,26 @@ def categoria():
     return json.dumps(result)
 
 
+@app.route('/cadastrar', methods=['POST'])
+def categoria():
+    if not request.json:
+        return 'Os dados do JSON não podem estar vazios!', 400
+    data = request.get_json()
+    conn = connect()
+    cur = conn.cursor()
+    query = "INSERT INTO categoria (descricao_categoria) VALUES ('" + data['descricao_categoria'] + "')"
+    cur.execute(query)
+    resp = cur.fetchone()[0]
+    if resp > 0:
+        conn.commit()
+        close(conn)
+        return Response("{'message': 'Categoria cadastrada com sucesso!'}", status=201, mimetype='application/json')
+    else:
+        conn.rollback()
+        close(conn)
+        return Response("{'message': 'Problemas ao cadastrar categoria!'}", status=500, mimetype='application/json')
+
+
 @app.route('/docs', methods=['GET'])
 def docs():
     query = "SELECT * FROM documento ORDER BY status_documento ASC, titulo_documento ASC"
