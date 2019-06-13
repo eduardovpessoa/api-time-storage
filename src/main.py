@@ -69,7 +69,7 @@ def categoria():
 def documentos():
     query = "SELECT * FROM documento ORDER BY status_documento ASC, titulo_documento ASC"
     result = query_db(query, False)
-    return json.dumps(result)
+    return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
 @app.route('/documentos/<cod>', methods=['GET'])
