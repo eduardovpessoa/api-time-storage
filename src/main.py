@@ -51,7 +51,7 @@ def categoria():
     return json.dumps(result)
 
 
-@app.route('/cadastrar', methods=['POST'])
+@app.route('/categoria', methods=['POST'])
 def categoria():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
