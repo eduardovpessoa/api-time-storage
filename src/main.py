@@ -86,6 +86,13 @@ def documentos_detail(cod):
     return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
+@app.route('/imagens/<int:cod>', methods=['GET'])
+def imagens(cod):
+    query = "SELECT * FROM imagem WHERE id_documento = " + str(cod)
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
 @app.route('/editora', methods=['GET'])
 def editora():
     query = "SELECT * FROM editora ORDER BY status_editora ASC, descricao_editora ASC"
@@ -148,13 +155,6 @@ def envgenero():
     conn.commit()
     close(conn)
     return Response("{'message': 'Gênero cadastrado com sucesso!'}", status=201, mimetype='application/json')
-
-
-@app.route('/imagens/<int:cod>', methods=['GET'])
-def imagens(cod):
-    query = "SELECT * FROM imagem WHERE id_documento = " + str(cod)
-    result = query_db(query, False)
-    return json.dumps(result)
 
 
 @app.route('/login', methods=['POST'])
