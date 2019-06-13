@@ -60,15 +60,9 @@ def envcategoria():
     cur = conn.cursor()
     query = "INSERT INTO categoria (descricao_categoria) VALUES ('" + data['descricao_categoria'] + "')"
     cur.execute(query)
-    resp = cur.fetchone()[0]
-    if resp > 0:
-        conn.commit()
-        close(conn)
-        return Response("{'message': 'Categoria cadastrada com sucesso!'}", status=201, mimetype='application/json')
-    else:
-        conn.rollback()
-        close(conn)
-        return Response("{'message': 'Problemas ao cadastrar categoria!'}", status=500, mimetype='application/json')
+    conn.commit()
+    close(conn)
+    return Response("{'message': 'Categoria cadastrada com sucesso!'}", status=201, mimetype='application/json')
 
 
 @app.route('/docs', methods=['GET'])
