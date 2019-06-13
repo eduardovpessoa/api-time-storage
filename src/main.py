@@ -29,14 +29,6 @@ def index():
     return '<h3>API TimeStorage Running!</h3><h4>PostgreSQL DB Version: ' + str(db_version) + '</h4>'
 
 
-@app.route('/pessoa', methods=['GET'])
-@auth.login_required
-def pessoa():
-    query = "SELECT * FROM v_pessoa"
-    result = query_db(query, False)
-    return json.dumps(result)
-
-
 @app.route('/autor', methods=['GET'])
 def autor():
     query = "SELECT * FROM autor ORDER BY status_autor ASC, nome_autor ASC"
@@ -44,9 +36,66 @@ def autor():
     return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
+@app.route('/cadastrar', methods=['POST'])
+def cadastrar():
+    if not request.json:
+        return 'Os dados do JSON não podem estar vazios!', 400
+    data = request.get_json()
+    conn = connect()
+    cur = conn.cursor()
+    query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
+            data['email_pessoa'] + "','" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "','" + \
+            data['senha_usuario'] + "')"
+    cur.execute(query)
+    resp = cur.fetchone()[0]
+    if resp:
+        conn.commit()
+        close(conn)
+        return Response("{'message': 'Usuário cadastrado com sucesso!'}", status=201, mimetype='application/json')
+    else:
+        conn.rollback()
+        close(conn)
+        return Response("{'message': 'Problemas ao cadastrar usuário!'}", status=500, mimetype='application/json')
+
+
 @app.route('/categoria', methods=['GET'])
 def categoria():
     query = "SELECT * FROM categoria ORDER BY status_categoria ASC, descricao_categoria ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
+@app.route('/documentos', methods=['GET'])
+def documentos():
+    query = "SELECT * FROM documento ORDER BY status_documento ASC, titulo_documento ASC"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
+@app.route('/documentos/<cod>', methods=['GET'])
+def documentos_detail(cod):
+    if not request.json:
+        return 'A requisição deve ser realizada no formato JSON!', 400
+    if not cod:
+        return 'O código do documento não pode ser vazio!', 400
+    else:
+        query = "SELECT * FROM v_docs_info"
+        conn = connect()
+        cur = conn.cursor()
+        cur.execute(query)
+        if cur.rowcount <= 0:
+            return json.dumps([]), 200
+        records = cur.fetchall()
+        docs = []
+        for row in records:
+            docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]))
+        close(conn)
+        return json.dumps(docs)
+
+
+@app.route('/editora', methods=['GET'])
+def editora():
+    query = "SELECT * FROM editora ORDER BY status_editora ASC, descricao_editora ASC"
     result = query_db(query, False)
     return json.dumps(result)
 
@@ -108,47 +157,11 @@ def envgenero():
     return Response("{'message': 'Gênero cadastrado com sucesso!'}", status=201, mimetype='application/json')
 
 
-@app.route('/docs', methods=['GET'])
-def docs():
-    query = "SELECT * FROM documento ORDER BY status_documento ASC, titulo_documento ASC"
-    result = query_db(query, False)
-    return json.dumps(result)
-
-
-@app.route('/editora', methods=['GET'])
-def editora():
-    query = "SELECT * FROM editora ORDER BY status_editora ASC, descricao_editora ASC"
-    result = query_db(query, False)
-    return json.dumps(result)
-
-
 @app.route('/genero', methods=['GET'])
 def genero():
     query = "SELECT * FROM genero ORDER BY status_genero ASC, descricao_genero ASC"
     result = query_db(query, False)
     return json.dumps(result)
-
-
-@app.route('/cadastrar', methods=['POST'])
-def cadastrar():
-    if not request.json:
-        return 'Os dados do JSON não podem estar vazios!', 400
-    data = request.get_json()
-    conn = connect()
-    cur = conn.cursor()
-    query = "SELECT fn_register_user('" + data['nome_pessoa'] + "','" + data['sobrenome_pessoa'] + "','" + \
-            data['email_pessoa'] + "','" + data['telefone_pessoa'] + "','" + data['data_nascimento_pessoa'] + "','" + \
-            data['senha_usuario'] + "')"
-    cur.execute(query)
-    resp = cur.fetchone()[0]
-    if resp:
-        conn.commit()
-        close(conn)
-        return Response("{'message': 'Usuário cadastrado com sucesso!'}", status=201, mimetype='application/json')
-    else:
-        conn.rollback()
-        close(conn)
-        return Response("{'message': 'Problemas ao cadastrar usuário!'}", status=500, mimetype='application/json')
 
 
 @app.route('/login', methods=['POST'])
@@ -175,44 +188,6 @@ def login():
         user.tipo = row[3]
     close(conn)
     return json.dumps(user.__dict__)
-
-
-@app.route('/documentos/<cod>', methods=['GET'])
-@auth.login_required
-def documentos_detail(cod):
-    if not request.json:
-        return 'A requisição deve ser realizada no formato JSON!', 400
-    if not cod:
-        return 'O código do documento não pode ser vazio!', 400
-    else:
-        query = "SELECT * FROM v_docs_info"
-        conn = connect()
-        cur = conn.cursor()
-        cur.execute(query)
-        if cur.rowcount <= 0:
-            return json.dumps([]), 200
-        records = cur.fetchall()
-        docs = []
-        for row in records:
-            docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]))
-        close(conn)
-        return json.dumps(docs)
-
-
-@app.route('/documentos', methods=['GET'])
-def documentos():
-    query = "SELECT * FROM v_docs"
-    conn = connect()
-    cur = conn.cursor()
-    cur.execute(query)
-    if cur.rowcount <= 0:
-        return json.dumps([]), 200
-    records = cur.fetchall()
-    docs = []
-    for row in records:
-        docs.append(Document(row[0], row[1], row[2], row[3], row[4], row[5]).__dict__)
-    close(conn)
-    return json.dumps(docs)
 
 
 class Document:
