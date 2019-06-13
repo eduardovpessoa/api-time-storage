@@ -157,13 +157,6 @@ def imagens(cod):
     return json.dumps(result)
 
 
-@app.route('/documentos/<int:cod>', methods=['GET'])
-def documentos_detail(cod):
-    query = "SELECT * FROM v_docs_info WHERE id_documento = " + str(cod)
-    result = query_db(query, False)
-    return json.dumps(result, indent=4, sort_keys=True, default=str)
-
-
 @app.route('/login', methods=['POST'])
 def login():
     if not request.json:
