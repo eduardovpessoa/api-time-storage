@@ -51,6 +51,21 @@ def categoria():
     return json.dumps(result)
 
 
+@app.route('/envautor', methods=['POST'])
+def envautor():
+    if not request.json:
+        return 'Os dados do JSON não podem estar vazios!', 400
+    data = request.get_json()
+    conn = connect()
+    cur = conn.cursor()
+    query = "INSERT INTO autor (nome_autor, data_nascimento_autor, data_falecimento_autor) VALUES ('" + data[
+        'nome_autor'] + "','" + data['data_nascimento_autor'] + "','" + data['data_falecimento_autor'] + "')"
+    cur.execute(query)
+    conn.commit()
+    close(conn)
+    return Response("{'message': 'Autor cadastrado com sucesso!'}", status=201, mimetype='application/json')
+
+
 @app.route('/envcategoria', methods=['POST'])
 def envcategoria():
     if not request.json:
