@@ -41,7 +41,7 @@ def pessoa():
 def autor():
     query = "SELECT * FROM autor ORDER BY status_autor ASC, nome_autor ASC"
     result = query_db(query, False)
-    return json.dumps(result)
+    return json.dumps(result, indent=4, sort_keys=True, default=str)
 
 
 @app.route('/categoria', methods=['GET'])
