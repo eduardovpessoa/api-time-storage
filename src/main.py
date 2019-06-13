@@ -151,7 +151,7 @@ def envgenero():
 
 
 @app.route('/imagens/<int:cod>', methods=['GET'])
-def genero(cod):
+def imagens(cod):
     query = "SELECT * FROM imagem WHERE id_documento = " + str(cod)
     result = query_db(query, False)
     return json.dumps(result)
