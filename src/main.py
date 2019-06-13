@@ -65,6 +65,13 @@ def categoria():
     return json.dumps(result)
 
 
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    query = "SELECT * FROM v_dashboard"
+    result = query_db(query, False)
+    return json.dumps(result)
+
+
 @app.route('/documentos', methods=['GET'])
 def documentos():
     query = "SELECT * FROM v_docs"
