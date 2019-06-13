@@ -200,7 +200,6 @@ def documentos_detail(cod):
 
 
 @app.route('/documentos', methods=['GET'])
-@auth.login_required
 def documentos():
     query = "SELECT * FROM v_docs"
     conn = connect()
