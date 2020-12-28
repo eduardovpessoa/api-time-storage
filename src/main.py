@@ -13,13 +13,11 @@ api = Api(app)
 
 @auth.verify_password
 def verify_password(username, password):
-    if username == 'apitimestorage' and password == '_@P1t1m3$t0r4g3##/':
-        return True
-    else:
-        return False
+    return username == 'apitimestorage' and password == '_@P1t1m3$t0r4g3##/'
 
 
 @app.route('/')
+@auth.login_required
 def index():
     conn = connect()
     cur = conn.cursor()
@@ -30,6 +28,7 @@ def index():
 
 
 @app.route('/autor', methods=['GET'])
+@auth.login_required
 def autor():
     query = "SELECT * FROM autor ORDER BY status_autor ASC, nome_autor ASC"
     result = query_db(query, False)
@@ -37,6 +36,7 @@ def autor():
 
 
 @app.route('/cadastrar', methods=['POST'])
+@auth.login_required
 def cadastrar():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
@@ -59,6 +59,7 @@ def cadastrar():
 
 
 @app.route('/categoria', methods=['GET'])
+@auth.login_required
 def categoria():
     query = "SELECT * FROM categoria ORDER BY status_categoria ASC, descricao_categoria ASC"
     result = query_db(query, False)
@@ -66,6 +67,7 @@ def categoria():
 
 
 @app.route('/dashboard', methods=['GET'])
+@auth.login_required
 def dashboard():
     query = "SELECT * FROM v_dashboard"
     result = query_db(query, False)
@@ -73,6 +75,7 @@ def dashboard():
 
 
 @app.route('/documentos', methods=['GET'])
+@auth.login_required
 def documentos():
     query = "SELECT * FROM v_docs"
     result = query_db(query, False)
@@ -80,6 +83,7 @@ def documentos():
 
 
 @app.route('/documentos/<int:cod>', methods=['GET'])
+@auth.login_required
 def documentos_detail(cod):
     query = "SELECT * FROM v_docs_info WHERE id_documento = " + str(cod)
     result = query_db(query, False)
@@ -87,6 +91,7 @@ def documentos_detail(cod):
 
 
 @app.route('/imagens/<int:cod>', methods=['GET'])
+@auth.login_required
 def imagens(cod):
     query = "SELECT * FROM imagem WHERE id_documento = " + str(cod)
     result = query_db(query, False)
@@ -94,6 +99,7 @@ def imagens(cod):
 
 
 @app.route('/editora', methods=['GET'])
+@auth.login_required
 def editora():
     query = "SELECT * FROM editora ORDER BY status_editora ASC, descricao_editora ASC"
     result = query_db(query, False)
@@ -101,6 +107,7 @@ def editora():
 
 
 @app.route('/envautor', methods=['POST'])
+@auth.login_required
 def envautor():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
@@ -116,6 +123,7 @@ def envautor():
 
 
 @app.route('/envcategoria', methods=['POST'])
+@auth.login_required
 def envcategoria():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
@@ -130,6 +138,7 @@ def envcategoria():
 
 
 @app.route('/enveditora', methods=['POST'])
+@auth.login_required
 def enveditora():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
@@ -144,6 +153,7 @@ def enveditora():
 
 
 @app.route('/envgenero', methods=['POST'])
+@auth.login_required
 def envgenero():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
@@ -158,6 +168,7 @@ def envgenero():
 
 
 @app.route('/login', methods=['POST'])
+@auth.login_required
 def login():
     if not request.json:
         return 'Os dados do JSON não podem estar vazios!', 400
